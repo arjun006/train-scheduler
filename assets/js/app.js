@@ -21,8 +21,10 @@ $(document).ready(function(){
 
         var trainName = $("#trainName").val().trim();
         var destination = $("#destination").val().trim();
-        var trainTime = moment($("#firstTrainTime").val().trim(), "HH mm").format("HH:mm");
+        var trainTime = moment($("#firstTrainTime").val().trim(), "HH: mm").subtract(2, "years").format("X");
+        console.log(trainTime)
         var frequency = $("#frequency").val().trim();
+
 
     var newTrain = {
         trainName : trainName,
@@ -45,15 +47,15 @@ database.ref().on("child_added", function(childSnapshot){
     var trainName = childSnapshot.val().trainName;
     var destination = childSnapshot.val().destination;
     var trainTime = childSnapshot.val().trainTime;
-    console.log(trainTime);
     var frequency = childSnapshot.val().frequency;
 
-var diffTime = moment().diff((trainTime), "minutes");
-console.log(diffTime);
+var diffTime = moment().diff(moment.unix(trainTime), "minutes");
+var remainder = diffTime % frequency;
+var minutesAway = frequency - remainder;
 
 
-var nextTrain
-var minutesAway
+var nextTrain = moment().add(minutesAway, "m").format("HH:mm");
+
 
 var newRow = $("<tr>").append(
     $("<td>").text(trainName),
@@ -66,7 +68,7 @@ var newRow = $("<tr>").append(
 $("#newTrain").append(newRow);
 
 
-})
+});
 
 
 
